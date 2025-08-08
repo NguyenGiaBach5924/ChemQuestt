@@ -76,11 +76,3 @@ Chemquest is an immersive, interactive web-based educational game designed to te
 ### Database Schema
 The quiz system uses a MySQL database
 
-
-## 🙏 Acknowledgments
-
-- Three.js community for 3D graphics capabilities
-- React team for the amazing framework
-- Educational content contributors
-
----
