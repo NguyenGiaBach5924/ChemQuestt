@@ -1,16 +1,29 @@
 import React, { useState } from 'react';
 import { IMAGES } from "../constants/Constants.js";
+import { useNavigate } from 'react-router-dom';
 
 const Setting = () => {
   const [open, setOpen] = useState(false);
   const [musicOn, setMusicOn] = useState(true);
+  const navigate = useNavigate();
 
   const handleExit = () => {
-    // Placeholder: Add your exit logic here
+    // Clear authentication token from localStorage
+    localStorage.removeItem('auth_token');
+    // Navigate back to homepage (sign out)
+    navigate('/');
+    setOpen(false); // Close the settings panel
   };
 
   const handleRestart = () => {
-    // Placeholder: Add your restart logic here
+    // Clear cached quiz so next open generates a new one
+    try {
+      localStorage.removeItem('quiz_questions');
+    } catch (e) {
+      console.error('Failed to clear cached quiz questions', e);
+    }
+    setOpen(false);
+    navigate('/main');
   };
 
   return (

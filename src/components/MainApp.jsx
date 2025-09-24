@@ -12,6 +12,7 @@ import Setting from "./setting";
 function MainApp() {
   const horizontalRef = useRef(null);
   const [scrollY, setScrollY] = useState(0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   useEffect(() => {
     const horizontal = horizontalRef.current;
@@ -30,9 +31,20 @@ function MainApp() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Timer starts when user navigates to main page
+  useEffect(() => {
+    const startTime = Date.now();
+    const intervalId = setInterval(() => {
+      const diffSeconds = Math.floor((Date.now() - startTime) / 1000);
+      setElapsedSeconds(diffSeconds);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <div className="scroll-wrapper">
-      <ProcessBar scrollY={scrollY} />
+      <ProcessBar scrollY={scrollY} elapsedSeconds={elapsedSeconds} />
       <Book />
       <Character />
       <Setting />

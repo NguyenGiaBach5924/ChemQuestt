@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../App.css";
 
-const ProcessBar = ({ scrollY = 0 }) => {
+const ProcessBar = ({ scrollY = 0, elapsedSeconds = 0 }) => {
   const [currentScene, setCurrentScene] = useState(1);
   const [progress, setProgress] = useState(0);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -42,10 +42,20 @@ const ProcessBar = ({ scrollY = 0 }) => {
     setIsExpanded(!isExpanded);
   };
 
+  const formatTime = (totalSeconds) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const mm = String(minutes).padStart(2, '0');
+    const ss = String(seconds).padStart(2, '0');
+    return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
+  };
+
   return (
     <div className={`process-bar-container ${isExpanded ? 'expanded' : 'collapsed'}`}>
       <div className="process-bar">
         <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+        <div className="timer-display">{formatTime(elapsedSeconds)}</div>
         
         {/* Scene indicators */}
         {Object.keys(sceneBreakpoints).map((sceneNum) => {

@@ -1075,6 +1075,8 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  font-family: 'Cursive', 'Comic Sans MS', sans-serif;
+  color: #5B3924;
 }
 
 .quiz-close-button {
@@ -1092,9 +1094,10 @@ body {
 .quiz-title {
   text-align: left;
   top: -80px;
-  color: #333;
+  color: #5B3924;
   margin-bottom: 20px;
   font-size: 24px;
+  font-family: 'Cursive', 'Comic Sans MS', sans-serif;
 }
 
 .quiz-question-info {
@@ -1103,14 +1106,17 @@ body {
 
 .quiz-question-counter {
   font-size: 18px;
-  color: #555;
+  color: #5B3924;
   margin-bottom: 15px;
+  font-family: 'Cursive', 'Comic Sans MS', sans-serif;
 }
 
 .quiz-question {
   font-size: 20px;
-  color: #333;
+  color: #5B3924;
   margin-bottom: 20px;
+  font-family: 'Cursive', 'Comic Sans MS', sans-serif;
+  line-height: 1.1;
 }
 
 .quiz-options {
@@ -1120,27 +1126,26 @@ body {
 }
 
 .quiz-option-button {
-  padding: 12px 20px;
+  padding: 8px 0;
   font-size: 16px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  background: white;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, transform 0.1s ease;
   text-align: left;
+  color: #5B3924;
+  font-family: 'Cursive', 'Comic Sans MS', sans-serif;
 }
 
 .quiz-option-button:hover {
-  border-color: #007bff;
-  background-color: #f8f9fa;
+  color: #1e40af;
+  transform: translateX(2px);
 }
 
 .quiz-option-button.selected {
-  background: #cde0ff;
-  border-color: #007bff;
+  background: transparent;
   color: #1e40af;
   font-weight: bold;
-  box-shadow: 0 0 8px #b3c6e0;
 }
 
 .quiz-complete {
@@ -1257,4 +1262,12 @@ body {
   display: table;
   width: 100%;
   table-layout: fixed;
+}
+.timer-display {
+  position: absolute;
+  right: 0;
+  color: #fff;
+  padding: 4px 8px;
+  font-weight: 600;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto;
 }

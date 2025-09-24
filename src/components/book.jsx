@@ -22,12 +22,42 @@ const Book = () => {
 
   const handleBookClick = () => {
     if (!isOpen) {
+      // Load cached quiz questions only
+      let cached = [];
+      try {
+        const raw = localStorage.getItem('quiz_questions');
+        if (raw) cached = JSON.parse(raw);
+      } catch (e) {
+        console.log('Failed to read cached quiz questions', e);
+      }
+
+      if (!cached || cached.length === 0) {
+        // No cached quiz, fetch a fresh one and cache it
+        (async () => {
+          try {
+            const response = await fetch('/api/quiz');
+            const data = await response.json();
+            setQuizQuestions(data);
+            try { localStorage.setItem('quiz_questions', JSON.stringify(data)); } catch {}
+            setIsOpen(true);
+            setShowQuiz(true);
+            setCurrentPage(0);
+            setSelectedAnswers([]);
+          } catch (error) {
+            alert('Failed to load quiz questions.');
+            setQuizQuestions([]);
+            console.log('Error fetching questions:', error);
+          }
+        })();
+        return;
+      }
+
+      setQuizQuestions(cached);
       setIsOpen(true); // Open the book
-      fetchQuestions();
       setShowQuiz(true);
       setCurrentPage(0);
       setSelectedAnswers([]);
-      console.log('Book clicked: opening book and fetching questions');
+      console.log('Book clicked: opening book with cached questions');
     }
   };
 
@@ -50,7 +80,21 @@ const Book = () => {
   };
 
   const handleFinish = () => {
-    // Optionally, you can store the score or answers here before navigating
+    // Compute score from selectedAnswers against quizQuestions.correct
+    try {
+      let score = 0;
+      for (let i = 0; i < quizQuestions.length; i++) {
+        const question = quizQuestions[i];
+        const selected = selectedAnswers[i];
+        if (typeof selected !== 'undefined' && Number(question.correct) === Number(selected)) {
+          score += 1;
+        }
+      }
+      // Save score for EndGame screen to read
+      localStorage.setItem('latest_quiz_score', String(score));
+    } catch (e) {
+      console.error('Failed to compute/store score', e);
+    }
     navigate('/endgame');
   };
 
@@ -66,18 +110,7 @@ const Book = () => {
   const endIdx = Math.min(startIdx + questionsPerPage, quizQuestions.length);
   const questionsOnPage = quizQuestions.slice(startIdx, endIdx);
 
-  const fetchQuestions = async () => {
-    try {
-      const response = await fetch('/api/quiz');
-      const data = await response.json();
-      setQuizQuestions(data);
-      console.log('Fetched questions:', data);
-    } catch (error) {
-      alert('Failed to load quiz questions.');
-      setQuizQuestions([]);
-      console.log('Error fetching questions:', error);
-    }
-  };
+  // Removed auto-fetching; quiz questions are generated on Restart in Settings and cached in localStorage.
 
   return (
     <>
