@@ -25,7 +25,7 @@ const Home = () => {
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
     if (token) {
-      navigate('/main');
+      navigate('/homepage');
     }
   }, [navigate]);
 
@@ -84,7 +84,7 @@ const Home = () => {
         if (data?.token) {
           localStorage.setItem('auth_token', data.token);
         }
-        navigate('/main');
+        navigate('/homepage');
       } catch (err) {
         setError('Unable to connect to server. Please try again.');
       }
@@ -100,9 +100,23 @@ const Home = () => {
   };
 
   return (
-    <div className="loginheaven" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <div style={{ background: 'white', padding: '2rem 3rem', borderRadius: '16px', boxShadow: '0 4px 24px rgba(0,0,0,0.12)', minWidth: 320 }}>
-        <h1 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#2dc3ff', fontFamily: 'Cursive, Comic Sans MS, sans-serif' }}>Welcome to Chemquest</h1>
+    <div className="land-container">
+      <div className="heaven"></div>
+      <div className="loginheaven" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{ background: 'white', padding: '2rem 3rem', borderRadius: '16px', boxShadow: '0 4px 24px rgba(0,0,0,0.12)', minWidth: 320 }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+          <img 
+            src="/logo.png" 
+            alt="Chemquest Logo" 
+            style={{ 
+              width: '80px', 
+              height: '80px', 
+              marginBottom: '1rem',
+              objectFit: 'contain'
+            }} 
+          />
+          <h1 style={{ color: '#2dc3ff', fontFamily: 'Cursive, Comic Sans MS, sans-serif', margin: 0 }}>Welcome to Chemquest</h1>
+        </div>
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1rem' }}>
             <label htmlFor="email" style={{ display: 'block', marginBottom: 4, color: '#031634' }}>School Email</label>
@@ -160,6 +174,7 @@ const Home = () => {
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

@@ -32,3 +32,5 @@ const mysql = require('mysql2/promise');
   console.error('DB inspection error:', err.message);
   process.exit(1);
 });
+
+

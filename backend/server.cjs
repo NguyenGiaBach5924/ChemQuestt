@@ -1,12 +1,12 @@
-  const express = require('express');
-  const mysql = require('mysql2');
-  const bcrypt = require('bcrypt');
-  const jwt = require('jsonwebtoken');
-  const cors = require('cors');
+ const express = require('express');
+ const mysql = require('mysql2');
+ const bcrypt = require('bcrypt');
+ const jwt = require('jsonwebtoken');
+ const cors = require('cors');
 
 
-  const app = express();
-  const port = 3000;
+ const app = express();
+ const port = 3000;
 
 
 // CORS configuration to allow local Vite dev server(s)
@@ -85,12 +85,20 @@ app.post('/register', async (req, res) => {
   if (!email || !password)
     return res.status(400).json({ error: "Email and password required" });
 
+  // Extract student name from email format: student_name.numbers@usth.edu.vn
+  const extractStudentName = (email) => {
+    const [localPart] = email.split('@');
+    return localPart.split('.')[0]; // Get the part before the first dot
+  };
+
+  const student_name = extractStudentName(email);
+
   try {
     const hash = await bcrypt.hash(password, 10);
 
     db.query(
-      'INSERT INTO user_db (`school_email`, `password_hash`) VALUES (?, ?)',
-      [email, hash],
+      'INSERT INTO user_db (`school_email`, `password_hash`, `student_name`) VALUES (?, ?, ?)',
+      [email, hash, student_name],
       (err, result) => {
         if (err) {
           console.error('Error registering user:', err.message);
@@ -159,10 +167,10 @@ app.post('/api/score', authenticateToken, (req, res) => {
   });
 });
 
-// Public leaderboard: top recent scores with user email (masked)
+// Public leaderboard: top recent scores with student names
 app.get('/api/leaderboard', (req, res) => {
   const sql = `
-    SELECT s.id, s.score, s.created_at, u.school_email
+    SELECT s.id, s.score, s.created_at, u.student_name
     FROM user_scores s
     JOIN user_db u ON u.user_id = s.user_id
     ORDER BY s.created_at DESC
@@ -173,16 +181,9 @@ app.get('/api/leaderboard', (req, res) => {
       console.error('Error fetching leaderboard:', err.message);
       return res.status(500).json({ error: 'Failed to fetch leaderboard' });
     }
-    const maskEmail = (email) => {
-      if (!email || typeof email !== 'string') return '';
-      const [user, domain] = email.split('@');
-      if (!user || !domain) return email;
-      const visible = user.slice(0, 2);
-      return `${visible}***@${domain}`;
-    };
     const data = rows.map(r => ({
       id: r.id,
-      name: maskEmail(r.school_email),
+      name: r.student_name || 'Anonymous',
       score: Number(r.score),
       created_at: r.created_at
     }));
@@ -203,3 +204,42 @@ app.get('/api/leaderboard', (req, res) => {
   app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
   });
+
+
+  app.post('/register', async (req, res) => {
+    const { school_email, password } = req.body;
+  
+    if (!school_email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+  
+    // Extract student_name from email
+    // Example: bachnguyen.1234@usth.edu.vn → bachnguyen
+    const student_name = school_email.split('@')[0].split('.')[0];
+  
+    try {
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      // Insert into DB
+      const sql = `
+        INSERT INTO user_db (school_email, password_hash, student_name)
+        VALUES (?, ?, ?)
+      `;
+  
+      db.query(sql, [school_email, hashedPassword, student_name], (err, result) => {
+        if (err) {
+          if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ error: 'Email already registered' });
+          }
+          return res.status(500).json({ error: err.message });
+        }
+  
+        res.status(201).json({ message: 'User registered successfully', student_name });
+      });
+  
+    } catch (err) {
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+  

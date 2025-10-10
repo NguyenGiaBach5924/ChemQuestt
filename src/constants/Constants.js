@@ -28,6 +28,7 @@ export const IMAGES = {
   NucleusEye: "/NucleusEye.png",
   cloud1: "/cloud1.png",
   cloud2: "/cloud2.png",
+  cloudheaven: "/cloudheaven.png",
   stair: "/stair.png",
   stair2: "/stair2.png",
   frame: "/frame.png",
@@ -35,4 +36,6 @@ export const IMAGES = {
   bookClosed: "/bookClosed.png",
   bookOpen: "/bookOpen.png",
   book: "/book.png",
-}; 
+  logo: "/logo.png",
+  userAvatar: "/user.png",
+};
